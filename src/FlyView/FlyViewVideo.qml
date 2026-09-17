@@ -1,7 +1,9 @@
 import QtQuick
+import QtQuick.Layouts
 
 import QGroundControl
 import QGroundControl.Controls
+import QGroundControl.FlightMap
 
 Item {
     id: _root
@@ -154,7 +156,7 @@ Item {
         }
     }
 
-    ProximityRadarVideoView{
+    ProximityRadarVideoView {
         anchors.fill:   parent
         vehicle:        QGroundControl.multiVehicleManager.activeVehicle
     }
@@ -162,5 +164,96 @@ Item {
     ObstacleDistanceOverlayVideo {
         id: obstacleDistance
         showText: pipState.state === pipState.fullState
+    }
+
+    //-- HUD Telemetry Overlay (Attitude, Speed, Altitude) directly over video stream
+    Item {
+        id: videoHudOverlay
+        anchors.fill: parent
+        visible: pipState.state === pipState.fullState && QGroundControl.multiVehicleManager.activeVehicle !== null
+
+        property var _activeVehicle: QGroundControl.multiVehicleManager.activeVehicle
+
+        QGCAttitudeWidget {
+            id: attitudeWidget
+            anchors.centerIn: parent
+            size: ScreenTools.defaultFontPixelHeight * 12
+            vehicle: videoHudOverlay._activeVehicle
+            showPitch: true
+            showHeading: true
+            visible: videoHudOverlay._activeVehicle !== null
+        }
+
+        // Индикатор скорости (слева от авиагоризонта)
+        Rectangle {
+            id: speedPanel
+            anchors.right: attitudeWidget.left
+            anchors.rightMargin: ScreenTools.defaultFontPixelWidth * 2
+            anchors.verticalCenter: attitudeWidget.verticalCenter
+            width: ScreenTools.defaultFontPixelWidth * 10
+            height: ScreenTools.defaultFontPixelHeight * 3
+            color: Qt.rgba(0, 0, 0, 0.5)
+            radius: ScreenTools.defaultFontPixelWidth * 0.5
+            border.color: "#00FF00"
+            border.width: 1
+
+            ColumnLayout {
+                anchors.centerIn: parent
+                spacing: 2
+
+                QGCLabel {
+                    Layout.alignment: Qt.AlignHCenter
+                    text: qsTr("SPEED")
+                    color: "#00FF00"
+                    font.pixelSize: ScreenTools.defaultFontPixelHeight * 0.6
+                    font.bold: true
+                }
+
+                QGCLabel {
+                    Layout.alignment: Qt.AlignHCenter
+                    text: videoHudOverlay._activeVehicle && videoHudOverlay._activeVehicle.groundSpeed && !isNaN(videoHudOverlay._activeVehicle.groundSpeed.value) ?
+                            videoHudOverlay._activeVehicle.groundSpeed.value.toFixed(1) + " " + QGroundControl.unitsConversion.appSettingsSpeedUnitsString : "0.0"
+                    color: "#00FF00"
+                    font.pixelSize: ScreenTools.defaultFontPixelHeight * 0.85
+                    font.bold: true
+                }
+            }
+        }
+
+        // Индикатор высоты (справа от авиагоризонта)
+        Rectangle {
+            id: altitudePanel
+            anchors.left: attitudeWidget.right
+            anchors.leftMargin: ScreenTools.defaultFontPixelWidth * 2
+            anchors.verticalCenter: attitudeWidget.verticalCenter
+            width: ScreenTools.defaultFontPixelWidth * 10
+            height: ScreenTools.defaultFontPixelHeight * 3
+            color: Qt.rgba(0, 0, 0, 0.5)
+            radius: ScreenTools.defaultFontPixelWidth * 0.5
+            border.color: "#00FF00"
+            border.width: 1
+
+            ColumnLayout {
+                anchors.centerIn: parent
+                spacing: 2
+
+                QGCLabel {
+                    Layout.alignment: Qt.AlignHCenter
+                    text: qsTr("ALT")
+                    color: "#00FF00"
+                    font.pixelSize: ScreenTools.defaultFontPixelHeight * 0.6
+                    font.bold: true
+                }
+
+                QGCLabel {
+                    Layout.alignment: Qt.AlignHCenter
+                    text: videoHudOverlay._activeVehicle && videoHudOverlay._activeVehicle.altitudeRelative && !isNaN(videoHudOverlay._activeVehicle.altitudeRelative.value) ?
+                            videoHudOverlay._activeVehicle.altitudeRelative.value.toFixed(1) + " " + QGroundControl.unitsConversion.appSettingsHorizontalDistanceUnitsString : "0.0"
+                    color: "#00FF00"
+                    font.pixelSize: ScreenTools.defaultFontPixelHeight * 0.85
+                    font.bold: true
+                }
+            }
+        }
     }
 }
