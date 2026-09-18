@@ -44,7 +44,7 @@ Item {
         vehicle:            _activeVehicle
         showPitch:          true
         showHeading:        true
-        visible:            _activeVehicle !== null
+        visible:            true
     }
 
     // 2. Индикатор скорости (слева от авиагоризонта)
@@ -59,7 +59,7 @@ Item {
         radius:                 ScreenTools.defaultFontPixelWidth * 0.5
         border.color:           "#00FF00"
         border.width:           1
-        visible:                _activeVehicle !== null
+        visible:                true
 
         ColumnLayout {
             anchors.centerIn:   parent
@@ -96,7 +96,7 @@ Item {
         radius:                 ScreenTools.defaultFontPixelWidth * 0.5
         border.color:           "#00FF00"
         border.width:           1
-        visible:                _activeVehicle !== null
+        visible:                true
 
         ColumnLayout {
             anchors.centerIn:   parent

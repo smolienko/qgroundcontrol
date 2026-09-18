@@ -170,7 +170,8 @@ Item {
     Item {
         id: videoHudOverlay
         anchors.fill: parent
-        visible: pipState.state === pipState.fullState && QGroundControl.multiVehicleManager.activeVehicle !== null
+        z: 10
+        visible: true
 
         property var _activeVehicle: QGroundControl.multiVehicleManager.activeVehicle
 
@@ -181,7 +182,7 @@ Item {
             vehicle: videoHudOverlay._activeVehicle
             showPitch: true
             showHeading: true
-            visible: videoHudOverlay._activeVehicle !== null
+            visible: true
         }
 
         // Индикатор скорости (слева от авиагоризонта)
@@ -196,6 +197,7 @@ Item {
             radius: ScreenTools.defaultFontPixelWidth * 0.5
             border.color: "#00FF00"
             border.width: 1
+            visible: true
 
             ColumnLayout {
                 anchors.centerIn: parent
@@ -232,6 +234,7 @@ Item {
             radius: ScreenTools.defaultFontPixelWidth * 0.5
             border.color: "#00FF00"
             border.width: 1
+            visible: true
 
             ColumnLayout {
                 anchors.centerIn: parent
