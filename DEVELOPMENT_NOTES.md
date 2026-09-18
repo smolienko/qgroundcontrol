@@ -6,8 +6,8 @@
    - Linked to GitHub fork: `https://github.com/smolienko/qgroundcontrol.git`
 
 2. **UI Modifications for Video Telemetry Overlay (Attitude, Speed, Altitude):**
-   - **`src/FlyView/FlyViewCustomLayer.qml`**: Configured custom HUD layer with central `QGCAttitudeWidget` and side panels for Speed (`groundSpeed.value`) and Altitude (`altitudeRelative.value`). Removed `_activeVehicle !== null` visibility constraint so the overlay is always visible even when disconnected.
-   - **`src/FlyView/FlyViewVideo.qml`**: Integrated HUD overlay directly into the video stream widget so telemetry appears over video in fullscreen, PIP, and window modes, ensuring visibility at all times (`visible: true`, `z: 10`).
+   - **`src/FlyView/FlyViewCustomLayer.qml`**: Removed HUD elements from custom layer so nothing is displayed over the main map screen.
+   - **`src/FlyView/FlyViewVideo.qml`**: Placed HUD overlay exclusively on the video screen. Replaced default `QGCAttitudeWidget` with a clean, transparent-background green horizon line and central crosshair (`#00FF00`) with pitch/roll animations, flanked by green Speed and Altitude panels.
 
 3. **CI/CD & Android APK Build:**
    - Configured GitHub Actions build workflow (`.github/workflows/android.yml`).

@@ -175,14 +175,97 @@ Item {
 
         property var _activeVehicle: QGroundControl.multiVehicleManager.activeVehicle
 
-        QGCAttitudeWidget {
+        // Прозрачный авиагоризонт (зеленая линия горизонта и прицел)
+        Item {
             id: attitudeWidget
             anchors.centerIn: parent
-            size: ScreenTools.defaultFontPixelHeight * 12
-            vehicle: videoHudOverlay._activeVehicle
-            showPitch: true
-            showHeading: true
-            visible: true
+            width: ScreenTools.defaultFontPixelHeight * 14
+            height: ScreenTools.defaultFontPixelHeight * 10
+
+            property real rollAngle: videoHudOverlay._activeVehicle ? videoHudOverlay._activeVehicle.roll.rawValue : 0
+            property real pitchAngle: videoHudOverlay._activeVehicle ? videoHudOverlay._activeVehicle.pitch.rawValue : 0
+            property real angularScale: pitchAngle * (height / 40)
+
+            // Поворачиваемая и смещаемая линия горизонта
+            Item {
+                id: horizonLineContainer
+                width: parent.width
+                height: parent.height
+                anchors.centerIn: parent
+
+                transform: [
+                    Translate {
+                        y: attitudeWidget.angularScale
+                    },
+                    Rotation {
+                        origin.x: horizonLineContainer.width / 2
+                        origin.y: horizonLineContainer.height / 2
+                        angle: -attitudeWidget.rollAngle
+                    }
+                ]
+
+                // Основная зеленая линия горизонта
+                Rectangle {
+                    anchors.centerIn: parent
+                    width: parent.width * 0.85
+                    height: 2
+                    color: "#00FF00"
+                }
+
+                // Левая засечка горизонта
+                Rectangle {
+                    anchors.right: parent.horizontalCenter
+                    anchors.rightMargin: parent.width * 0.22
+                    anchors.verticalCenter: parent.verticalCenter
+                    width: 2
+                    height: 10
+                    color: "#00FF00"
+                }
+
+                // Правая засечка горизонта
+                Rectangle {
+                    anchors.left: parent.horizontalCenter
+                    anchors.leftMargin: parent.width * 0.22
+                    anchors.verticalCenter: parent.verticalCenter
+                    width: 2
+                    height: 10
+                    color: "#00FF00"
+                }
+            }
+
+            // Статичный прицел по центру
+            Item {
+                anchors.centerIn: parent
+                width: 32
+                height: 12
+
+                // Левое крыло прицела
+                Rectangle {
+                    anchors.left: parent.left
+                    anchors.verticalCenter: parent.verticalCenter
+                    width: 10
+                    height: 2
+                    color: "#00FF00"
+                }
+
+                // Центральная точка
+                Rectangle {
+                    anchors.centerIn: parent
+                    width: 4
+                    height: 4
+                    radius: 2
+                    color: "#00FF00"
+                }
+
+                // Правое крыло прицела
+                Rectangle {
+                    anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
+                    width: 10
+                    height: 2
+                    color: "#00FF00"
+                }
+            }
         }
 
         // Индикатор скорости (слева от авиагоризонта)
@@ -193,11 +276,10 @@ Item {
             anchors.verticalCenter: attitudeWidget.verticalCenter
             width: ScreenTools.defaultFontPixelWidth * 10
             height: ScreenTools.defaultFontPixelHeight * 3
-            color: Qt.rgba(0, 0, 0, 0.5)
+            color: Qt.rgba(0, 0, 0, 0.4)
             radius: ScreenTools.defaultFontPixelWidth * 0.5
             border.color: "#00FF00"
             border.width: 1
-            visible: true
 
             ColumnLayout {
                 anchors.centerIn: parent
@@ -230,11 +312,10 @@ Item {
             anchors.verticalCenter: attitudeWidget.verticalCenter
             width: ScreenTools.defaultFontPixelWidth * 10
             height: ScreenTools.defaultFontPixelHeight * 3
-            color: Qt.rgba(0, 0, 0, 0.5)
+            color: Qt.rgba(0, 0, 0, 0.4)
             radius: ScreenTools.defaultFontPixelWidth * 0.5
             border.color: "#00FF00"
             border.width: 1
-            visible: true
 
             ColumnLayout {
                 anchors.centerIn: parent
